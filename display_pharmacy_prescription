@@ -1,0 +1,62 @@
+echo "Select your choice"
+echo "1. Search by patient id"
+echo "2. Search by pharmacy id"
+echo "3. Search by doctor id"
+
+echo "Please select your choice:"
+read choice
+
+if [[ $choice -eq 1 ]]
+then
+
+echo "Enter patient id"
+read patient_id
+
+source ./id_validation
+validate_id patients.csv $patient_id
+
+patient_name=`ps -ef | grep "port 10 -" | grep -v "grep port 10 -"| awk -F, -v patient_id="$patient_id" '{if ( $1 == patient_id ) {
+    patient_name = $2;
+    print patient_name;
+    }}' patients.csv `
+
+awk -F, -v patient_name="$patient_name" 'NR==1 {printf "%20s|%-20s|%-20s|%-20s|%-20s\n\n",$1,$2,$3,$4,$5;}; {if($2 == patient_name) {
+    printf "%20s|%-20s|%-20s|%-20s|%-20s\n", $1,$2,$3,$4,$5;}}' pharmacy_prescriptions.csv
+
+elif [[ $choice -eq 2 ]]
+then
+
+echo "Enter pharmacy id"
+read pharmacy_id
+
+source ./id_validation
+validate_id pharmacy.csv $pharmacy_id
+
+pharmacist=`ps -ef | grep "port 10 -" | grep -v "grep port 10 -"| awk -F, -v pharmacy_id="$pharmacy_id" '{if ( $1 == pharmacy_id ) {
+    pharmacist = $3;
+    print pharmacist;
+    }}' pharmacy.csv `
+
+awk -F, -v pharmacist="$pharmacist" 'NR==1 {printf "%20s|%-20s|%-20s|%-20s|%-20s\n\n",$1,$2,$3,$4,$5;}; {if($3 == pharmacist) {
+    printf "%20s|%-20s|%-20s|%-20s|%-20s\n", $1,$2,$3,$4,$5;}}' pharmacy_prescriptions.csv
+
+elif [[ $choice -eq 3 ]]
+then
+
+echo "Enter doctor id"
+read doctor_id
+
+source ./id_validation
+validate_id doctors.csv $doctor_id
+
+doctor_name=`ps -ef | grep "port 10 -" | grep -v "grep port 10 -"| awk -F, -v doctor_id="$doctor_id" '{if ( $1 == doctor_id ) {
+    doctor_name = $2;
+    print doctor_name;
+    }}' doctors.csv `
+
+awk -F, -v doctor_name="$doctor_name" 'NR==1 {printf "%20s|%-20s|%-20s|%-20s|%-20s\n\n",$1,$2,$3,$4,$5;}; {if($4 == doctor_name) {
+    printf "%20s|%-20s|%-20s|%-20s|%-20s\n", $1,$2,$3,$4,$5;}}' pharmacy_prescriptions.csv
+
+else
+echo "Incorrect Entry"
+fi

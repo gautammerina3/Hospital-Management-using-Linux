@@ -1,0 +1,128 @@
+echo "Select your choice"
+echo "1. Search by id"
+echo "2. Search by name"
+echo "3. Search by admitted date"
+echo "4. Search by location"
+echo "5. Search by doctor"
+echo "6. Search by diagnosis"
+
+#Regex Check
+name_regex="[^a-zA-Z ]+"
+department_regex="[^a-zA-Z ]+"
+doc_name_regex="[^a-zA-Z ]+"
+id_regex="[^0-9]+"
+email_regex='[a-z0-9]+@[a-z]+\.[a-z]{2,3}'
+contact_regex='[0-9]{10}'
+location_regex="[^a-zA-Z0-9 ]+"
+diagnosis_regex="[^a-zA-Z0-9 ]+"
+
+echo "Enter your choice:"
+read choice
+
+if [[ $choice -eq 1 ]]
+then
+
+echo "Enter admitted patient id"
+read patient_id
+
+if [[ "$patient_id" =~ $id_regex ]]
+then
+echo "Please enter a valid id"
+exit 1
+fi
+
+source ./id_validation
+validate_id admitted_patients.csv $patient_id
+
+#SHOW RECORDS
+awk -v patient_id=$patient_id -F, 'NR==1 {printf "%15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s\n\n",$1,$2,$3,$4,$5,$6,$7,$8}; ($1 == patient_id) {printf "%15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s\n",$1,$2,$3,$4,$5,$6,$7,$8;}' admitted_patients.csv
+
+elif [[ $choice -eq 2 ]]
+then
+
+echo "Enter patient name"
+read patient_name
+
+if [[ "$patient_name" =~ $name_regex ]]
+then
+echo "Please enter a valid name"
+exit 1
+fi
+# source ./id_validation
+# validate_id patients.csv $patient_id
+
+#SHOW RECORDS
+awk -v patient_name="$patient_name" -F, 'NR==1 {printf "%15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s\n\n",$1,$2,$3,$4,$5,$6,$7,$8}; ($2 == patient_name) {printf "%15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s\n",$1,$2,$3,$4,$5,$6,$7,$8;}' admitted_patients.csv
+
+elif [[ $choice -eq 3 ]]
+then
+
+echo "Enter admitted date(mm/dd/yyyy)"
+read admitted_date
+
+if [[ "$admitted_date" =~ $date_regex ]]
+then
+echo "Please enter a valid date"
+exit 1
+fi
+# source ./id_validation
+# validate_id patients.csv $patient_id
+
+#SHOW RECORDS
+awk -v admitted_date="$admitted_date" -F, 'NR==1 {printf "%15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s\n\n",$1,$2,$3,$4,$5,$6,$7,$8}; ($3 == admitted_date) {printf "%15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s\n",$1,$2,$3,$4,$5,$6,$7,$8;}' admitted_patients.csv
+
+elif [[ $choice -eq 4 ]]
+then
+
+echo "Enter patient's address"
+read location
+
+# source ./id_validation
+# validate_id patients.csv $patient_id
+if [[ "$location" =~ $location_regex ]]
+then
+echo "Please enter a valid location"
+exit 1
+fi
+
+#SHOW RECORDS
+awk -v location="$location" -F, 'NR==1 {printf "%15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s\n\n",$1,$2,$3,$4,$5,$6,$7,$8}; ($4 == location) {printf "%15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s\n",$1,$2,$3,$4,$5,$6,$7,$8;}' admitted_patients.csv
+
+elif [[ $choice -eq 5 ]]
+then
+
+echo "Enter doctor name"
+read doctor_name
+
+if [[ "$doctor_name" =~ $name_regex ]]
+then
+echo "Please enter a valid name"
+exit 1
+fi
+
+# source ./id_validation
+# validate_id patients.csv $patient_id
+
+#SHOW RECORDS
+awk -v doctor_name="$doctor_name" -F, 'NR==1 {printf "%15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s\n\n",$1,$2,$3,$4,$5,$6,$7,$8}; ($5 == doctor_name) {printf "%15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s\n",$1,$2,$3,$4,$5,$6,$7,$8;}' admitted_patients.csv
+
+elif [[ $choice -eq 6 ]]
+then
+
+echo "Enter patient's diagnosis"
+read diagnosis
+
+if [[ "$diagnosis" =~ $diagnosis_regex ]]
+then
+echo "Please enter a valid diagnosis"
+exit 1
+fi
+# source ./id_validation
+# validate_id patients.csv $patient_id
+
+#SHOW RECORDS
+awk -v diagnosis="$diagnosis" -F, 'NR==1 {printf "%15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s\n\n",$1,$2,$3,$4,$5,$6,$7,$8}; ($6 == diagnosis) {printf "%15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s\n",$1,$2,$3,$4,$5,$6,$7,$8;}' admitted_patients.csv
+
+else
+echo "Invalid input! Please enter valid one."
+fi

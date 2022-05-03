@@ -1,0 +1,146 @@
+echo "Select your choice"
+echo "1. Search by id"
+echo "2. Search by name"
+echo "3. Search by department"
+echo "4. Search by doctor"
+echo "5. Search by location"
+echo "6. Search by email"
+echo "7. Search by contact number"
+
+#Regex Check
+name_regex="[^a-zA-Z ]+"
+department_regex="[^a-zA-Z ]+"
+doc_name_regex="[^a-zA-Z ]+"
+id_regex="[^0-9]+"
+email_regex='[a-z0-9]+@[a-z]+\.[a-z]{2,3}'
+contact_regex='[0-9]{10}'
+location_regex="[^a-zA-Z0-9 ]+"
+
+
+echo "Enter your choice:"
+read choice
+
+if [[ $choice -eq 1 ]]
+then
+
+echo "Enter patient id"
+read patient_id
+
+if [[ "$patient_id" =~ $id_regex ]]
+then
+echo "Please enter a valid id"
+exit 1
+fi
+
+source ./id_validation
+validate_id patients.csv $patient_id
+
+#SHOW RECORDS
+awk -v patient_id=$patient_id -F, 'NR==1 {printf "%15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s\n\n",$1,$2,$3,$4,$5,$6,$7,$8}; ($1 == patient_id) {printf "%15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s\n",$1,$2,$3,$4,$5,$6,$7,$8;}' patients.csv
+
+elif [[ $choice -eq 2 ]]
+then
+
+echo "Enter patient name"
+read patient_name
+
+if [[ "$patient_name" =~ $name_regex ]]
+then
+echo "Please enter a valid name"
+exit 1
+fi
+# source ./id_validation
+# validate_id patients.csv $patient_id
+
+#SHOW RECORDS
+awk -v patient_name="$patient_name" -F, 'NR==1 {printf "%15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s\n\n",$1,$2,$3,$4,$5,$6,$7,$8}; ($2 == patient_name) {printf "%15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s\n",$1,$2,$3,$4,$5,$6,$7,$8;}' patients.csv
+
+elif [[ $choice -eq 3 ]]
+then
+
+echo "Enter department"
+read department
+
+if [[ "$department" =~ $department_regex ]]
+then
+echo "Please enter a valid department"
+exit 1
+fi
+# source ./id_validation
+# validate_id patients.csv $patient_id
+
+#SHOW RECORDS
+awk -v department="$department" -F, 'NR==1 {printf "%15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s\n\n",$1,$2,$3,$4,$5,$6,$7,$8}; ($3 == department) {printf "%15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s\n",$1,$2,$3,$4,$5,$6,$7,$8;}' patients.csv
+
+elif [[ $choice -eq 4 ]]
+then
+
+echo "Enter doctor name"
+read doctor_name
+
+if [[ "$doctor_name" =~ $name_regex ]]
+then
+echo "Please enter a valid name"
+exit 1
+fi
+
+# source ./id_validation
+# validate_id patients.csv $patient_id
+
+#SHOW RECORDS
+awk -v doctor_name="$doctor_name" -F, 'NR==1 {printf "%15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s\n\n",$1,$2,$3,$4,$5,$6,$7,$8}; ($4 == doctor_name) {printf "%15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s\n",$1,$2,$3,$4,$5,$6,$7,$8;}' patients.csv
+
+elif [[ $choice -eq 5 ]]
+then
+
+echo "Enter patient's address"
+read location
+
+# source ./id_validation
+# validate_id patients.csv $patient_id
+if [[ "$location" =~ $location_regex ]]
+then
+echo "Please enter a valid location"
+exit 1
+fi
+
+#SHOW RECORDS
+awk -v location="$location" -F, 'NR==1 {printf "%15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s\n\n",$1,$2,$3,$4,$5,$6,$7,$8}; ($6 == location) {printf "%15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s\n",$1,$2,$3,$4,$5,$6,$7,$8;}' patients.csv
+
+elif [[ $choice -eq 6 ]]
+then
+
+echo "Enter patient's email"
+read email
+
+if [[ ! "$email" =~ $email_regex ]]
+then
+echo "Please enter a valid email"
+exit 1
+fi
+# source ./id_validation
+# validate_id patients.csv $patient_id
+
+#SHOW RECORDS
+awk -v email="$email" -F, 'NR==1 {printf "%15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s\n\n",$1,$2,$3,$4,$5,$6,$7,$8}; ($7 == email) {printf "%15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s\n",$1,$2,$3,$4,$5,$6,$7,$8;}' patients.csv
+
+elif [[ $choice -eq 7 ]]
+then
+
+echo "Enter patient's contact number"
+read contact_number
+
+if [[ ! "$contact_number" =~ $contact_regex ]]
+then
+echo "Please enter a valid contact number"
+exit 1
+fi
+# source ./id_validation
+# validate_id patients.csv $patient_id
+
+#SHOW RECORDS
+awk -v contact_number="$contact_number" -F, 'NR==1 {printf "%15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s\n\n",$1,$2,$3,$4,$5,$6,$7,$8}; ($8 == contact_number) {printf "%15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s|%-15s\n",$1,$2,$3,$4,$5,$6,$7,$8;}' patients.csv
+
+else
+echo "Invalid input! Please enter valid one."
+fi

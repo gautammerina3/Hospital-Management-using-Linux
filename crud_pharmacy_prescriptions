@@ -1,0 +1,146 @@
+echo "Select your choice"
+echo "1. Add prescription record"
+echo "2. Update prescription record"
+echo "3. Delete prescription record"
+echo "4. Display prescription record"
+
+echo "Enter your choice:"
+read choice
+
+if [[ $choice -eq 1 ]]
+then
+
+echo "Enter patient id"
+read patient_id
+
+source ./id_validation
+validate_id patients.csv $patient_id
+
+patient_name=`ps -ef | grep "port 10 -" | grep -v "grep port 10 -"| awk -F, -v patient_id="$patient_id" '{if ( $1 == patient_id ) {
+    patient_name = $2;
+    print patient_name;
+    }}' patients.csv `
+
+echo "Enter pharmacy id"
+read pharmacy_id
+
+source ./id_validation
+validate_id pharmacy.csv $pharmacy_id
+
+pharmacist=`ps -ef | grep "port 10 -" | grep -v "grep port 10 -"| awk -F, -v pharmacy_id="$pharmacy_id" '{if ( $1 == pharmacy_id ) {
+    pharmacist = $3;
+    print pharmacist;
+    }}' pharmacy.csv `
+
+echo "Enter doctor id"
+read doctor_id
+
+source ./id_validation
+validate_id doctors.csv $doctor_id
+
+doctor_name=`ps -ef | grep "port 10 -" | grep -v "grep port 10 -"| awk -F, -v doctor_id="$doctor_id" '{if ( $1 == doctor_id ) {
+    doctor_name = $2;
+    print doctor_name;
+    }}' doctors.csv `
+
+echo "Enter data"
+read data
+    
+#ADD RECORDS
+filename=pharmacy_prescriptions.csv
+#Check if file ends with new line and add records appropriately
+if [ ! -s "$filename" ]; then
+  printf "%s%s%s%s%s\n" $RANDOM,"$patient_name","$pharmacist","$doctor_name","$data" >> $filename
+elif [ -z "$(tail -c 1 <"$filename")" ]; then
+  printf "%s%s%s%s%s\n" $RANDOM,"$patient_name","$pharmacist","$doctor_name","$data" >> $filename
+else
+  printf "\n%s%s%s%s%s\n" $RANDOM,"$patient_name","$pharmacist","$doctor_name","$data" >> $filename
+fi
+
+echo "Record added!"
+
+#-----------------------------------------------------------------------#
+#UPDATE RECORDS
+elif [[ $choice -eq 2 ]]
+then
+
+echo "Enter prescription id"
+read prescription_id
+
+echo "Enter patient id"
+read patient_id
+
+source ./id_validation
+validate_id patients.csv $patient_id
+
+patient_name=`ps -ef | grep "port 10 -" | grep -v "grep port 10 -"| awk -F, -v patient_id="$patient_id" '{if ( $1 == patient_id ) {
+    patient_name = $2;
+    print patient_name;
+    }}' patients.csv `
+
+echo "Enter pharmacy id"
+read pharmacy_id
+
+source ./id_validation
+validate_id pharmacy.csv $pharmacy_id
+
+pharmacist=`ps -ef | grep "port 10 -" | grep -v "grep port 10 -"| awk -F, -v pharmacy_id="$pharmacy_id" '{if ( $1 == pharmacy_id ) {
+    pharmacist = $3;
+    print pharmacist;
+    }}' pharmacy.csv `
+
+echo "Enter doctor id"
+read doctor_id
+
+source ./id_validation
+validate_id doctors.csv $doctor_id
+
+doctor_name=`ps -ef | grep "port 10 -" | grep -v "grep port 10 -"| awk -F, -v doctor_id="$doctor_id" '{if ( $1 == doctor_id ) {
+    doctor_name = $2;
+    print doctor_name;
+    }}' doctors.csv `
+
+echo "Enter data"
+read data
+
+#UPDATE RECORDS
+awk -F, -v prescription_id="$prescription_id" -v patient_name="$patient_name" -v pharmacist="$pharmacist" -v doctor_name="$doctor_name" -v data="$data" 'BEGIN {OFS=FS} {
+   if($1 == prescription_id) {
+    $2=patient_name;
+    $3=pharmacist;
+    $4=doctor_name;
+    $5=data;
+    }
+    }1' pharmacy_prescriptions.csv > pharmacy_prescriptions.tmp && mv pharmacy_prescriptions.tmp pharmacy_prescriptions.csv
+echo "Record updated!"
+
+#-----------------------------------------------------------------------------------#
+#-----------------------------------------------------------------------------------#
+#DELETE PHARMACY PRESCRIPTION
+elif [[ "$choice" -eq 3 ]]
+then
+echo "Enter prescription's id"
+read prescription_id
+echo " Do you want to delete pharmacy prescription's record for ID $prescription_id(y/n)"
+read c1
+if [ "$c1" = y ]
+then
+awk -v prescription_id=$prescription_id -F, '$1 != prescription_id' pharmacy_prescriptions.csv > pharmacy_prescriptions.tmp && mv pharmacy_prescriptions.tmp pharmacy_prescriptions.csv
+echo "Record deleted!"
+
+else
+echo "Record not deleted!"
+
+fi
+#-----------------------------------------------------------------------------------#
+#-----------------------------------------------------------------------------------#
+#DISPLAY PHARMACY PRESCRIPTION
+elif [[ "$choice" -eq 4 ]]
+then
+./display_pharmacy_prescription
+
+else
+echo "Incorrect Entry"
+
+
+fi

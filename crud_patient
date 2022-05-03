@@ -1,0 +1,233 @@
+echo "Select your choice"
+echo "1.Add a patient's full record"
+echo "2.Update a patient's full record"
+echo "3.Delete patient's record"
+echo "4.Search patient"
+echo "Please enter your choice:"
+read choice
+
+#Regex Check
+name_regex="[^a-zA-Z ]+"
+department_regex="[^a-zA-Z ]+"
+doc_name_regex="[^a-zA-Z ]+"
+doc_id_regex="[^0-9]+"
+email_regex='[a-z0-9]+@[a-z]+\.[a-z]{2,3}'
+contact_regex='[0-9]{10}'
+location_regex="[^a-zA-Z0-9 ]+"
+#-----------------------------------------------------------------------------------#
+#-----------------------------------------------------------------------------------#
+#ADD RECORDS
+if [[ "$choice" -eq 1 ]]
+then
+
+echo "Please add the following patient details"
+echo "Enter patient name"
+read patient_name
+
+if [[ "$patient_name" =~ $name_regex ]]
+then
+echo "Please enter a valid name"
+exit 1
+fi
+
+echo "Enter department where patient is admitted"
+read department
+
+if [[ "$department" =~ $department_regex ]]
+then
+echo "Please enter a valid department"
+exit 1
+fi
+
+# echo "Enter doctor's name for patient"
+# read doctor_name
+
+# if [[ "$doctor_name" =~ $doc_name_regex ]]
+# then
+# echo "Please enter a valid name"
+# exit 1
+# fi 
+#Might have to do ask doctor_id and get doctor name from doctor table based on id
+#Might have to do ask doctor_id and get doctor name from doctor table based on id
+echo "Enter doc id"
+read doctor_id
+
+if [[ "$doctor_id" =~ $doc_id_regex ]]
+then
+echo "Please enter a valid doc id"
+exit 1
+fi
+
+echo "Enter patient's location"
+read location
+
+if [[ "$location" =~ $location_regex ]]
+then
+echo "Please enter a valid location"
+exit 1
+fi
+
+echo "Enter patient's email"
+read patient_email
+
+if [[ ! "$patient_email" =~ $email_regex ]]
+then
+echo "Please enter a valid email"
+exit 1
+fi
+
+echo "Enter patient's contact number(10 digits)"
+read contact_number
+
+if [[ ! "$contact_number" =~ $contact_regex ]]
+then
+echo "Please enter a valid phone number"
+exit 1
+fi
+
+doctor_name=`ps -ef | grep "port 10 -" | grep -v "grep port 10 -"| awk -F, -v doctor_id="$doctor_id" '{if ( $1 == doctor_id ) {
+    doctor_name = $2;
+    print doctor_name;
+    }}' doctors.csv `
+
+#ADD RECORDS
+filename=patients.csv
+#Check if file ends with new line and add records appropriately
+if [ ! -s "$filename" ]; then
+  printf "%s%s%s%s%s\n" $RANDOM,$patient_name,"$department",$doctor_name,$doctor_id,$location,$email,$contact_number >> patients.csv
+elif [ -z "$(tail -c 1 <"$filename")" ]; then
+  printf "%s%s%s%s%s\n" $RANDOM,$patient_name,"$department",$doctor_name,$doctor_id,$location,$email,$contact_number >> patients.csv
+else
+  printf "\n%s%s%s%s%s\n" $RANDOM,$patient_name,"$department",$doctor_name,$doctor_id,$location,$email,$contact_number >> patients.csv
+fi
+
+echo " Patient's details added! "
+
+
+#-----------------------------------------------------------------------------------#
+#-----------------------------------------------------------------------------------#
+#UPDATE RECORDS
+elif [[ "$choice" -eq 2 ]]
+then
+#Update code
+patient_regex="[^a-zA-Z0-9 ]+"
+number_regex="[^0-9 ]+"
+
+echo "Please add the following patient details"
+
+echo "Enter patient's id to edit"
+read patient_id
+
+echo "Enter new patient name"
+read patient_name
+
+if [[ "$patient_name" =~ $patient_regex ]]
+then
+echo "Please enter a valid name"
+exit 1
+fi
+
+echo "Enter department where patient is admitted"
+read department
+
+if [[ "$department" =~ $department_regex ]]
+then
+echo "Please enter a valid department"
+exit 1
+fi
+
+doctor_name=`ps -ef | grep "port 10 -" | grep -v "grep port 10 -"| awk -F, -v doctor_id="$doctor_id" '{if ( $1 == doctor_id ) {
+    doctor_name = $2;
+    print doctor_name;
+    }}' doctors.csv `
+
+echo "Enter doc id"
+read doctor_id
+
+if [[ "$doctor_id" =~ $doc_id_regex ]]
+then
+echo "Please enter a valid doc id"
+exit 1
+fi
+
+echo "Enter patient's location"
+read location
+
+if [[ "$location" =~ $location_regex ]]
+then
+echo "Please enter a valid location"
+exit 1
+fi
+
+echo "Enter patient's email"
+read patient_email
+
+if [[ ! "$patient_email" =~ $email_regex ]]
+then
+echo "Please enter a valid email"
+exit 1
+fi
+
+echo "Enter patient's contact number(10 digits)"
+read contact_number
+
+if [[ ! "$contact_number" =~ $contact_regex ]]
+then
+echo "Please enter a valid phone number"
+exit 1
+fi
+
+awk -F, -v patient_id="$patient_id" -v patient_name="$patient_name" -v department="$department" -v doctor_name="$doctor_name" -v doctor_id="$doctor_id" -v location="$location" -v patient_email="$patient_email" -v contact_number="$contact_number" 'BEGIN {OFS=FS} {
+   if($1 == patient_id) {
+    $2=patient_name;
+    $3=department;
+    $4=doctor_name;
+    $5=doctor_id;
+    $6=location;
+    $7=patient_email;
+    $8=contact_number;
+    }
+    }1' patients.csv > patients.tmp && mv patients.tmp patients.csv
+
+#UPDATE PATIENTS'S NAME and LOCATION IN ADMITTED_PATIENT TABLE AS WELL
+awk -F, -v patient_id=$patient_id -v patient_name="$patient_name" -v location="$location" 'BEGIN{OFS=FS} {
+	if($7 == patient_id) {
+	$2=patient_name;
+  $4=location;
+	}
+	}1' admitted_patients.csv > admitted_patients.tmp && mv admitted_patients.tmp admitted_patients.csv	
+
+echo "Patient's record updated!"
+./menu
+
+#-----------------------------------------------------------------------------------#
+#-----------------------------------------------------------------------------------#
+#DELETE PATIENT
+elif [[ "$choice" -eq 3 ]]
+then
+echo "Enter patient's id"
+read patient_id
+echo " Do you want delete patient's record for ID $patient_id(y/n)"
+read c1
+if [ "$c1" = y ]
+then
+awk -v patient_id=$patient_id -F, '$1 != patient_id' patients.csv > patients.tmp && mv patients.tmp patients.csv
+awk -v patient_id=$patient_id -F, '$7 != patient_id' admitted_patients.csv > admitted_patients.tmp && mv admitted_patients.tmp admitted_patients.csv
+echo "Record deleted!"
+
+else
+echo "Record not deleted!"
+
+fi
+
+#-----------------------------------------------------------------------------------#
+#-----------------------------------------------------------------------------------#
+#DISPLAY PATIENT
+elif [[ "$choice" -eq 4 ]]
+then
+./display_patient
+
+else
+echo "Incorrect Entry"
+#--------------------------------------------
+fi
