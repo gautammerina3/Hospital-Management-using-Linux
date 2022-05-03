@@ -1,0 +1,29 @@
+#VALIDATE ID
+function validate_id(){
+idfound=0
+filename="$1"
+validateId="$2"
+printf -v idarray "`awk -F, '
+{ 
+  awkArray[counter++] = $1; 
+} 
+{ 
+  for (n=0; n<counter;n++)
+    print awkArray[n],"\n"; 
+}' $filename`"
+idarray=($idarray)
+
+for n in "${idarray[@]}"
+do
+  if [[ "$validateId" = "$n" ]]
+  then
+     idfound=1
+  fi
+done
+
+if [[ $idfound -eq 0 ]]
+then
+ echo "The id entered is not in the database. Please enter a valid id"
+ exit 1
+fi
+}

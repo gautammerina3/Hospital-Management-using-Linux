@@ -1,0 +1,46 @@
+# creating a menu with the following options
+echo "SELECT YOUR CATEGORY:";
+echo "1. BUILDING"
+echo "2. ROOMS"
+echo "3. DOCTORS"
+echo "4. PATIENTS"
+echo "5. ADMITTED PATIENTS"
+echo "6. PHARMACY"
+echo "7. PHARMACY PRESCRIPTIONS"
+
+#guests, vehicles, programs
+
+echo "x. CLOSE"
+echo "Please enter your choice: "
+
+while :
+do
+
+# reading choice
+read choice
+
+# case statement is used to compare one value with the multiple cases.
+case $choice in
+  1)  echo "BUILDING=>"
+      ./crud_building;;
+  2)  echo "ROOMS=>"
+	  ./crud_room;;
+  3)  echo "DOCTORS=>"
+      ./crud_doctor;; 
+  4)  echo "PATIENTS=>"
+      ./crud_patient;;
+  5)  echo "ADMITTED PATIENTS=>"
+      ./crud_admitted_patient;;
+  6) echo "PHARMACY=>"
+      ./crud_pharmacy;;
+  7) echo "PHARMACY PRESCRIPTIONS=>"
+      ./crud_pharmacy_prescriptions;;
+# pattern exit
+  x) echo "###EXITING###"
+      exit;;  
+  # Default Pattern
+  *) echo "###INVALID OPTION###";;
+esac
+  ./menu
+  exit
+done

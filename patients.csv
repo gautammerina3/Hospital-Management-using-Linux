@@ -1,0 +1,11 @@
+p_id,p_name,department,doc_name,doc_id,location,email,contact_number
+1,Merina Gautam,Cardiology,Bella Griffin,10,St Cloud,merina@gmail.com,1234567890
+2,Elijan Hank,Surgery,Keith Dudemeister,9,Sartell,eijah@gmail.com,1287687890
+3,Bill Scott,Radiology,Bob Kelso,7,St Paul,mona@gmail.com,1878888340
+4,Pearl Buck,Gastroenterologist,Christopher Turk,3,Dallas,pearl@gmail.com,1237779090
+5,Tina Fey,Surgery,Keith Dudemeister,9,California,tina@gmail.com,1236783890
+6566,Sam Tucker,Dermatology,John Dorian,2,Baltimore,sam@gmail.com,1225467890
+7,Alex Parker,Radiology,Bob Kelso,7,Colorado,alex@gmail.com,9876435678
+8,Buddy Green,Nursing,John Wen,8,Chicago,buddy@gmail.com,2378465893
+9,Monika Geller,Physician,Eva Smith,6,Waite Park,monika@gmail.com,2435678923
+10,Bob Jones,Neurology,Bella Griffin,3,St Cloud,bob@gmail.com,8976465737
